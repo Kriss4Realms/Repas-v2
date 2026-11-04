@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Repas & Courses</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #10b981;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 80px;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        nav {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 68px;
+            z-index: 99;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 14px 8px;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        nav button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        main {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--primary-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+            transition: background 0.2s;
+        }
+
+        .btn:active {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--text);
+            box-shadow: none;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Planning styles */
+        .day-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .day-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .day-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .meal-slot {
+            font-size: 0.95rem;
+            margin: 4px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .meal-tag {
+            font-size: 0.75rem;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+
+        /* Shopping List styles */
+        .rayon-group {
+            margin-bottom: 16px;
+        }
+
+        .rayon-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            background: #f0f9ff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 4px;
+            border-bottom: 1px dashed #f1f5f9;
+            cursor: pointer;
+        }
+
+        .shopping-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            accent-color: var(--accent);
+        }
+
+        .shopping-item label {
+            font-size: 0.95rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .shopping-item.checked label {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Database View styles */
+        .db-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .db-item strong {
+            display: block;
+            color: var(--text);
+        }
+
+        .db-item span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Import Section */
+        textarea {
+            width: 100%;
+            height: 120px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mes Repas & Courses</h1>
+        <p>Planning & Liste Intermarché (4 pers.)</p>
+    </header>
+
+    <nav>
+        <button id="tab-planning-btn" class="active" onclick="switchTab('planning')">Planning</button>
+        <button id="tab-courses-btn" onclick="switchTab('courses')">Courses</button>
+        <button id="tab-database-btn" onclick="switchTab('database')">Base JSON</button>
+    </nav>
+
+    <main>
+        <div id="tab-planning" class="tab-content active">
+            <div class="card">
+                <button class="btn" onclick="generateMenu()">🎲 Générer un nouveau planning</button>
+            </div>
+
+            <div id="planning-container" class="card">
+                <p style="text-align: center; color: var(--text-muted);">Cliquez sur le bouton ci-dessus pour générer vos repas de la semaine.</p>
+            </div>
+        </div>
+
+        <div id="tab-courses" class="tab-content">
+            <div class="card">
+                <h2>
+                    Liste de Courses
+                    <span id="courses-count" style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;"></span>
+                </h2>
+                <div id="courses-container">
+                    <p style="text-align: center; color: var(--text-muted);">Générez d'abord un planning pour voir la liste de courses.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-database" class="tab-content">
+            <div class="card">
+                <h2>Mettre à jour la base</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                    Collez ici le code JSON généré lors de nos échanges pour mettre à jour vos plats et vos produits fixes.
+                </p>
+                <textarea id="json-input" placeholder="Coller le JSON ici..."></textarea>
+                <button class="btn btn-secondary" onclick="updateDatabaseFromInput()">Mettre à jour la base</button>
+            </div>
+
+            <div class="card">
+                <h2>Plats enregistrés (<span id="recipes-count">0</span>)</h2>
+                <div id="recipes-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>Invariables / Tronc commun (<span id="invariables-count">0</span>)</h2>
+                <div id="invariables-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data Store initial
+        let appData = {
+            "foyer": { "nombre_personnes": 4 },
+            "invariables": [
+                { "nom": "Coca-Cola Zero (pack de 6)", "quantite": 1, "unite": "pack", "rayon": "Boissons" },
+                { "nom": "Yaourt nature / Desserts", "quantite": 12, "unite": "pots", "rayon": "Produits Laitiers" },
+                { "nom": "Œufs (boîte de 12)", "quantite": 1, "unite": "boîte", "rayon": "Œufs / Crèmerie" },
+                { "nom": "Lait demi-écrémé", "quantite": 6, "unite": "L", "rayon": "Produits Laitiers" },
+                { "nom": "Papier toilette", "quantite": 1, "unite": "paquet", "rayon": "Hygiène / Entretien" }
+            ],
+            "recettes": [
+                {
+                    "id": "quiche_lorraine",
+                    "nom": "Quiche Lorraine",
+                    "ingredients": [
+                        { "nom": "Pâte brisée", "quantite": 1, "unite": "pâte", "rayon": "Frais / Pâtes" },
+                        { "nom": "Lardons fumés", "quantite": 200, "unite": "g", "rayon": "Charcuterie / Traiteur" },
+                        { "nom": "Œufs", "quantite": 4, "unite": "pièces", "rayon": "Œufs / Crèmerie" },
+                        { "nom": "Crème fraîche épaisse", "quantite": 200, "unite": "cl", "rayon": "Produits Laitiers" },
+                        { "nom": "Gruyère râpé", "quantite": 100, "unite": "g", "rayon": "Fromages" }
+                    ]
+                },
+                {
+                    "id": "pates_carbonara",
+                    "nom": "Pâtes Carbonara",
+                    "ingredients": [
+                        { "nom": "Spaghetti ou Pâtes", "quantite": 400, "unite": "g", "rayon": "Épicerie salée" },
+                        { "nom": "Lardons fumés", "quantite": 200, "unite": "g", "rayon": "Charcuterie / Traiteur" },
+                        { "nom": "Œufs", "quantite": 4, "unite": "pièces", "rayon": "Œufs / Crèmerie" },
+                        { "nom": "Crème fraîche", "quantite": 20, "unite": "cl", "rayon": "Produits Laitiers" },
+                        { "nom": "Parmesan râpé", "quantite": 60, "unite": "g", "rayon": "Fromages" }
+                    ]
+                },
+                {
+                    "id": "poulet_epinards_riz",
+                    "nom": "Blanc de poulet aux épinards & riz",
+                    "ingredients": [
+                        { "nom": "Blancs de poulet", "quantite": 4, "unite": "pièces", "rayon": "Boucherie / Volaille" },
+                        { "nom": "Épinards frais", "quantite": 500, "unite": "g", "rayon": "Fruits & Légumes" },
+                        { "nom": "Crème fraîche liquide", "quantite": 20, "unite": "cl", "rayon": "Produits Laitiers" },
+                        { "nom": "Riz basmati", "quantite": 300, "unite": "g", "rayon": "Épicerie salée" },
+                        { "nom": "Gousse d'ail", "quantite": 1, "unite": "gousse", "rayon": "Fruits & Légumes" }
+                    ]
+                },
+                {
+                    "id": "fajitas",
+                    "nom": "Fajitas au poulet",
+                    "ingredients": [
+                        { "nom": "Galettes de tortillas", "quantite": 8, "unite": "pièces", "rayon": "Épicerie du monde" },
+                        { "nom": "Blancs de poulet", "quantite": 500, "unite": "g", "rayon": "Boucherie / Volaille" },
+                        { "nom": "Mélange d'épices Fajitas", "quantite": 1, "unite": "sachet", "rayon": "Épicerie du monde" },
+                        { "nom": "Poivrons", "quantite": 2, "unite": "pièces", "rayon": "Fruits & Légumes" },
+                        { "nom": "Oignon", "quantite": 1, "unite": "pièce", "rayon": "Fruits & Légumes" },
+                        { "nom": "Fromage râpé", "quantite": 150, "unite": "g", "rayon": "Fromages" }
+                    ]
+                },
+                {
+                    "id": "pates_bolognaise",
+                    "nom": "Pâtes Bolognaise",
+                    "ingredients": [
+                        { "nom": "Pâtes (Penne/Spaghetti)", "quantite": 400, "unite": "g", "rayon": "Épicerie salée" },
+                        { "nom": "Viande hachée pur bœuf", "quantite": 400, "unite": "g", "rayon": "Boucherie" },
+                        { "nom": "Purée ou Sauce tomate", "quantite": 400, "unite": "g", "rayon": "Épicerie salée" },
+                        { "nom": "Oignon", "quantite": 1, "unite": "pièce", "rayon": "Fruits & Légumes" },
+                        { "nom": "Parmesan râpé", "quantite": 50, "unite": "g", "rayon": "Fromages" }
+                    ]
+                },
+                {
+                    "id": "poisson_pane_semoule",
+                    "nom": "Poisson pané et semoule",
+                    "ingredients": [
+                        { "nom": "Poisson pané", "quantite": 8, "unite": "pièces", "rayon": "Surgelés ou Poissonnerie" },
+                        { "nom": "Semoule de blé moyenne", "quantite": 300, "unite": "g", "rayon": "Épicerie salée" },
+                        { "nom": "Beurre", "quantite": 30, "unite": "g", "rayon": "Produits Laitiers" },
+                        { "nom": "Citron", "quantite": 1, "unite": "pièce", "rayon": "Fruits & Légumes" }
+                    ]
+                }
+            ]
+        };
+
+        let currentPlanning = [];
+
+        // Charger les données sauvegardées en local si elles existent
+        function loadSavedData() {
+            const saved = localStorage.getItem('repas_app_data');
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Erreur chargement localStorage");
+                }
+            }
+            renderDatabaseView();
+        }
+
+        function saveData() {
+            localStorage.setItem('repas_app_data', JSON.stringify(appData));
+            renderDatabaseView();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('tab-' + tabName + '-btn').classList.add('active');
+        }
+
+        function generateMenu() {
+            const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+            const recipes = [...appData.recettes];
+            currentPlanning = [];
+
+            if (recipes.length === 0) {
+                alert("Aucune recette disponible !");
+                return;
+            }
+
+            const planningContainer = document.getElementById('planning-container');
+            planningContainer.innerHTML = '';
+
+            days.forEach(day => {
+                // Tirer au sort midi et soir
+                const lunch = recipes[Math.floor(Math.random() * recipes.length)];
+                const dinner = recipes[Math.floor(Math.random() * recipes.length)];
+
+                currentPlanning.push({ day, lunch, dinner });
+
+                const dayEl = document.createElement('div');
+                dayEl.className = 'day-item';
+                dayEl.innerHTML = `
+                    <div class="day-name">${day}</div>
+                    <div class="meal-slot"><span class="meal-tag">MIDI</span> ${lunch.nom}</div>
+                    <div class="meal-slot"><span class="meal-tag">SOIR</span> ${dinner.nom}</div>
+                `;
+                planningContainer.appendChild(dayEl);
+            });
+
+            generateShoppingList();
+        }
+
+        function generateShoppingList() {
+            const coursesContainer = document.getElementById('courses-container');
+            coursesContainer.innerHTML = '';
+
+            if (currentPlanning.length === 0) return;
+
+            // Map pour combiner les ingrédients
+            const listMap = {};
+
+            // 1. Ajouter les invariables
+            appData.invariables.forEach(item => {
+                const key = item.nom.toLowerCase();
+                listMap[key] = {
+                    nom: item.nom,
+                    quantite: item.quantite,
+                    unite: item.unite,
+                    rayon: item.rayon || "Divers"
+                };
+            });
+
+            // 2. Ajouter les ingrédients du planning
+            currentPlanning.forEach(slot => {
+                [slot.lunch, slot.dinner].forEach(recipe => {
+                    recipe.ingredients.forEach(ing => {
+                        const key = ing.nom.toLowerCase();
+                        if (listMap[key]) {
+                            // Si déjà dans la liste et unités compatibles, on additionne
+                            if (listMap[key].unite === ing.unite) {
+                                listMap[key].quantite += ing.quantite;
+                            }
+                        } else {
+                            listMap[key] = {
+                                nom: ing.nom,
+                                quantite: ing.quantite,
+                                unite: ing.unite,
+                                rayon: ing.rayon || "Divers"
+                            };
+                        }
+                    });
+                });
+            });
+
+            // Groupement par Rayon Intermarché
+            const rayonedMap = {};
+            Object.values(listMap).forEach(item => {
+                if (!rayonedMap[item.rayon]) {
+                    rayonedMap[item.rayon] = [];
+                }
+                rayonedMap[item.rayon].push(item);
+            });
+
+            let totalItems = 0;
+
+            // Rendu de la liste
+            for (const [rayon, items] of Object.entries(rayonedMap)) {
+                const rayonGroup = document.createElement('div');
+                rayonGroup.className = 'rayon-group';
+                
+                let rayonHTML = `<div class="rayon-title">📍 ${rayon}</div>`;
+                
+                items.forEach(item => {
+                    totalItems++;
+                    const itemId = 'item-' + Math.random().toString(36).substr(2, 9);
+                    rayonHTML += `
+                        <div class="shopping-item" onclick="toggleCheck('${itemId}')">
+                            <input type="checkbox" id="${itemId}">
+                            <label for="${itemId}">${item.nom} - <strong>${item.quantite} ${item.unite}</strong></label>
+                        </div>
+                    `;
+                });
+
+                rayonGroup.innerHTML = rayonHTML;
+                coursesContainer.appendChild(rayonGroup);
+            }
+
+            document.getElementById('courses-count').innerText = `(${totalItems} articles)`;
+        }
+
+        function toggleCheck(id) {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                const parent = checkbox.closest('.shopping-item');
+                if (checkbox.checked) {
+                    parent.classList.add('checked');
+                } else {
+                    parent.classList.remove('checked');
+                }
+            }
+        }
+
+        function renderDatabaseView() {
+            document.getElementById('recipes-count').innerText = appData.recettes.length;
+            document.getElementById('invariables-count').innerText = appData.invariables.length;
+
+            const recipesList = document.getElementById('recipes-list');
+            recipesList.innerHTML = appData.recettes.map(r => `
+                <div class="db-item">
+                    <strong>${r.nom}</strong>
+                    <span>${r.ingredients.length} ingrédients</span>
+                </div>
+            `).join('');
+
+            const invariablesList = document.getElementById('invariables-list');
+            invariablesList.innerHTML = appData.invariables.map(i => `
+                <div class="db-item">
+                    <strong>${i.nom}</strong>
+                    <span>${i.quantite} ${i.unite} (${i.rayon})</span>
+                </div>
+            `).join('');
+
+            document.getElementById('json-input').value = JSON.stringify(appData, null, 2);
+        }
+
+        function updateDatabaseFromInput() {
+            try {
+                const parsed = JSON.parse(document.getElementById('json-input').value);
+                if (parsed.recettes && parsed.invariables) {
+                    appData = parsed;
+                    saveData();
+                    alert("Base de données mise à jour avec succès !");
+                } else {
+                    alert("Le JSON doit contenir les clés 'recettes' et 'invariables'.");
+                }
+            } catch(e) {
+                alert("Erreur de format JSON. Vérifiez la syntaxe.");
+            }
+        }
+
+        // Init
+        loadSavedData();
+    </script>
+</body>
+</html>
