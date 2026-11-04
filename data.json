@@ -1,0 +1,255 @@
+{
+  "foyer": {
+    "nombre_personnes": 4
+  },
+  "invariables": [
+    {
+      "nom": "Coca-Cola Zero (pack de 6)",
+      "quantite": 1,
+      "unite": "pack",
+      "rayon": "Boissons"
+    },
+    {
+      "nom": "Yaourt nature / Desserts",
+      "quantite": 12,
+      "unite": "pots",
+      "rayon": "Produits Laitiers"
+    },
+    {
+      "nom": "Œufs (boîte de 12)",
+      "quantite": 1,
+      "unite": "boîte",
+      "rayon": "Œufs / Crèmerie"
+    },
+    {
+      "nom": "Lait demi-écrémé",
+      "quantite": 6,
+      "unite": "L",
+      "rayon": "Produits Laitiers"
+    },
+    {
+      "nom": "Papier toilette",
+      "quantite": 1,
+      "unite": "paquet",
+      "rayon": "Hygiène / Entretien"
+    }
+  ],
+  "recettes": [
+    {
+      "id": "quiche_lorraine",
+      "nom": "Quiche Lorraine",
+      "ingredients": [
+        {
+          "nom": "Pâte brisée",
+          "quantite": 1,
+          "unite": "pâte",
+          "rayon": "Frais / Pâtes"
+        },
+        {
+          "nom": "Lardons fumés",
+          "quantite": 200,
+          "unite": "g",
+          "rayon": "Charcuterie / Traiteur"
+        },
+        {
+          "nom": "Œufs",
+          "quantite": 4,
+          "unite": "pièces",
+          "rayon": "Œufs / Crèmerie"
+        },
+        {
+          "nom": "Crème fraîche épaisse",
+          "quantite": 200,
+          "unite": "cl",
+          "rayon": "Produits Laitiers"
+        },
+        {
+          "nom": "Gruyère râpé",
+          "quantite": 100,
+          "unite": "g",
+          "rayon": "Fromages"
+        }
+      ]
+    },
+    {
+      "id": "pates_carbonara",
+      "nom": "Pâtes Carbonara",
+      "ingredients": [
+        {
+          "nom": "Spaghetti ou Pâtes",
+          "quantite": 400,
+          "unite": "g",
+          "rayon": "Épicerie salée"
+        },
+        {
+          "nom": "Lardons fumés",
+          "quantite": 200,
+          "unite": "g",
+          "rayon": "Charcuterie / Traiteur"
+        },
+        {
+          "nom": "Œufs",
+          "quantite": 4,
+          "unite": "pièces",
+          "rayon": "Œufs / Crèmerie"
+        },
+        {
+          "nom": "Crème fraîche",
+          "quantite": 20,
+          "unite": "cl",
+          "rayon": "Produits Laitiers"
+        },
+        {
+          "nom": "Parmesan râpé",
+          "quantite": 60,
+          "unite": "g",
+          "rayon": "Fromages"
+        }
+      ]
+    },
+    {
+      "id": "poulet_epinards_riz",
+      "nom": "Blanc de poulet aux épinards & riz",
+      "ingredients": [
+        {
+          "nom": "Blancs de poulet",
+          "quantite": 4,
+          "unite": "pièces",
+          "rayon": "Boucherie / Volaille"
+        },
+        {
+          "nom": "Épinards frais",
+          "quantite": 500,
+          "unite": "g",
+          "rayon": "Fruits & Légumes"
+        },
+        {
+          "nom": "Crème fraîche liquide",
+          "quantite": 20,
+          "unite": "cl",
+          "rayon": "Produits Laitiers"
+        },
+        {
+          "nom": "Riz basmati",
+          "quantite": 300,
+          "unite": "g",
+          "rayon": "Épicerie salée"
+        },
+        {
+          "nom": "Gousse d'ail",
+          "quantite": 1,
+          "unite": "gousse",
+          "rayon": "Fruits & Légumes"
+        }
+      ]
+    },
+    {
+      "id": "fajitas",
+      "nom": "Fajitas au poulet",
+      "ingredients": [
+        {
+          "nom": "Galettes de tortillas",
+          "quantite": 8,
+          "unite": "pièces",
+          "rayon": "Épicerie du monde"
+        },
+        {
+          "nom": "Blancs de poulet",
+          "quantite": 500,
+          "unite": "g",
+          "rayon": "Boucherie / Volaille"
+        },
+        {
+          "nom": "Mélange d'épices Fajitas",
+          "quantite": 1,
+          "unite": "sachet",
+          "rayon": "Épicerie du monde"
+        },
+        {
+          "nom": "Poivrons",
+          "quantite": 2,
+          "unite": "pièces",
+          "rayon": "Fruits & Légumes"
+        },
+        {
+          "nom": "Oignon",
+          "quantite": 1,
+          "unite": "pièce",
+          "rayon": "Fruits & Légumes"
+        },
+        {
+          "nom": "Fromage râpé",
+          "quantite": 150,
+          "unite": "g",
+          "rayon": "Fromages"
+        }
+      ]
+    },
+    {
+      "id": "pates_bolognaise",
+      "nom": "Pâtes Bolognaise",
+      "ingredients": [
+        {
+          "nom": "Pâtes (Penne/Spaghetti)",
+          "quantite": 400,
+          "unite": "g",
+          "rayon": "Épicerie salée"
+        },
+        {
+          "nom": "Viande hachée pur bœuf",
+          "quantite": 400,
+          "unite": "g",
+          "rayon": "Boucherie"
+        },
+        {
+          "nom": "Purée ou Sauce tomate",
+          "quantite": 400,
+          "unite": "g",
+          "rayon": "Épicerie salée"
+        },
+        {
+          "nom": "Oignon",
+          "quantite": 1,
+          "unite": "pièce",
+          "rayon": "Fruits & Légumes"
+        },
+        {
+          "nom": "Parmesan râpé",
+          "quantite": 50,
+          "unite": "g",
+          "rayon": "Fromages"
+        }
+      ]
+    },
+    {
+      "id": "poisson_pane_semoule",
+      "nom": "Poisson pané et semoule",
+      "ingredients": [
+        {
+          "nom": "Poisson pané",
+          "quantite": 8,
+          "unite": "pièces",
+          "rayon": "Surgelés ou Poissonnerie"
+        },
+        {
+          "nom": "Semoule de blé moyenne",
+          "quantite": 300,
+          "unite": "g",
+          "rayon": "Épicerie salée"
+        },
+        {
+          "nom": "Beurre",
+          "quantite": 30,
+          "unite": "g",
+          "rayon": "Produits Laitiers"
+        },
+        {
+          "nom": "Citron",
+          "quantite": 1,
+          "unite": "pièce",
+          "rayon": "Fruits & Légumes"
+        }
+      ]
+    }
+  ]
+}
