@@ -36,14 +36,21 @@ async function loadData() {
     await loadPlanningForWeek();
 }
 
-// Obtenir la liste des 7 jours à partir de la date sélectionnée
+// Obtenir la liste exacte des 7 jours (avec les vrais noms de jours adaptés à la date)
 function getWeekDates(startDateStr) {
     let start = new Date(startDateStr);
     let dates = [];
+    const dayFormatter = new Intl.DateTimeFormat('fr-FR', { weekday: 'long' });
+
     for (let i = 0; i < 7; i++) {
         let d = new Date(start);
         d.setDate(start.getDate() + i);
-        dates.push(d.toISOString().split('T')[0]);
+        let dateIso = d.toISOString().split('T')[0];
+        let dayName = dayFormatter.format(d);
+        // Mettre la première lettre en majuscule
+        dayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        
+        dates.push({ date: dateIso, name: dayName });
     }
     return dates;
 }
@@ -54,6 +61,7 @@ async function loadPlanningForWeek() {
     if (!startDateStr) return;
 
     const weekDates = getWeekDates(startDateStr);
+    const dateStrings = weekDates.map(w => w.date);
 
     const { data, error } = await sb
         .from('planning')
@@ -62,7 +70,7 @@ async function loadPlanningForWeek() {
             midi:repas_midi_id(id, nom, recette_ingredients(nom, quantite, unite, rayon)),
             soir:repas_soir_id(id, nom, recette_ingredients(nom, quantite, unite, rayon))
         `)
-        .in('date', weekDates);
+        .in('date', dateStrings);
 
     if (error) {
         console.error("Erreur lors du chargement du planning :", error);
@@ -76,75 +84,119 @@ async function loadPlanningForWeek() {
         });
     }
 
-    const dayNames = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
     currentPlanning = [];
-    const planningContainer = document.getElementById('planning-container');
-    planningContainer.innerHTML = '';
 
-    weekDates.forEach((dateStr, index) => {
-        let dayName = dayNames[index];
-        let savedDay = planningMap[dateStr];
+    weekDates.forEach(w => {
+        let savedDay = planningMap[w.date];
 
-        let lunch = (savedDay && savedDay.lunch) ? savedDay.lunch : { id: null, nom: "Non planifié", ingredients: [] };
-        let dinner = (savedDay && savedDay.dinner) ? savedDay.dinner : { id: null, nom: "Non planifié", ingredients: [] };
+        let lunch = (savedDay && savedDay.lunch) ? savedDay.lunch : (appData.recettes[0] || { id: null, nom: "Non planifié", ingredients: [] });
+        let dinner = (savedDay && savedDay.dinner) ? savedDay.dinner : (appData.recettes[0] || { id: null, nom: "Non planifié", ingredients: [] });
 
-        currentPlanning.push({ day: dayName, date: dateStr, lunch, dinner });
-
-        const dayEl = document.createElement('div');
-        dayEl.className = 'day-item';
-        dayEl.innerHTML = `
-            <div class="day-name">${dayName} <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${dateStr})</span></div>
-            <div class="meal-slot"><span class="meal-tag">MIDI</span> ${lunch.nom}</div>
-            <div class="meal-slot"><span class="meal-tag">SOIR</span> ${dinner.nom}</div>
-        `;
-        planningContainer.appendChild(dayEl);
+        currentPlanning.push({ day: w.name, date: w.date, lunch, dinner });
     });
 
+    renderPlanningUI();
     generateShoppingList();
 }
 
-// Générer un nouveau planning et le sauvegarder dans Supabase
-async function generateAndSaveMenu() {
-    const startDateStr = document.getElementById('start-date').value;
-    if (!startDateStr) {
-        alert("Veuillez choisir une date.");
-        return;
-    }
-
+// 1. Générer aléatoirement un planning en local (sans enregistrer en base)
+function generateRandomMenuLocally() {
     const recipes = [...appData.recettes];
     if (recipes.length === 0) {
         alert("Aucune recette disponible !");
         return;
     }
 
-    const weekDates = getWeekDates(startDateStr);
-    const dayNames = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-    
-    currentPlanning = [];
-    let upsertData = [];
+    const startDateStr = document.getElementById('start-date').value;
+    if (!startDateStr) {
+        alert("Veuillez choisir une date.");
+        return;
+    }
 
-    weekDates.forEach((dateStr, index) => {
+    const weekDates = getWeekDates(startDateStr);
+    currentPlanning = [];
+
+    weekDates.forEach(w => {
         const lunch = recipes[Math.floor(Math.random() * recipes.length)];
         const dinner = recipes[Math.floor(Math.random() * recipes.length)];
 
-        currentPlanning.push({ day: dayNames[index], date: dateStr, lunch, dinner });
-
-        upsertData.push({
-            date: dateStr,
-            repas_midi_id: lunch.id,
-            repas_soir_id: dinner.id
-        });
+        currentPlanning.push({ day: w.name, date: w.date, lunch, dinner });
     });
 
-    // Enregistrement dans Supabase
+    renderPlanningUI();
+    generateShoppingList();
+}
+
+// Afficher le planning et les sélecteurs d'édition à la volée
+function renderPlanningUI() {
+    const planningContainer = document.getElementById('planning-container');
+    planningContainer.innerHTML = '';
+
+    currentPlanning.forEach((slot, index) => {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day-item';
+
+        // Options du menu déroulant pour le midi et le soir
+        const recipeOptions = appData.recettes.map(r => 
+            `<option value="${r.id}" ${slot.lunch && slot.lunch.id === r.id ? 'selected' : ''}>${r.nom}</option>`
+        ).join('');
+
+        const recipeOptionsDinner = appData.recettes.map(r => 
+            `<option value="${r.id}" ${slot.dinner && slot.dinner.id === r.id ? 'selected' : ''}>${r.nom}</option>`
+        ).join('');
+
+        dayEl.innerHTML = `
+            <div class="day-name">${slot.day} <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${slot.date})</span></div>
+            <div class="meal-slot">
+                <div class="meal-info">
+                    <span class="meal-tag">MIDI</span>
+                    <select class="recipe-select" onchange="updateMeal(${index}, 'lunch', this.value)">
+                        ${recipeOptions}
+                    </select>
+                </div>
+            </div>
+            <div class="meal-slot">
+                <div class="meal-info">
+                    <span class="meal-tag">SOIR</span>
+                    <select class="recipe-select" onchange="updateMeal(${index}, 'dinner', this.value)">
+                        ${recipeOptionsDinner}
+                    </select>
+                </div>
+            </div>
+        `;
+        planningContainer.appendChild(dayEl);
+    });
+}
+
+// Changer un plat à la volée via la liste déroulante
+function updateMeal(dayIndex, slotType, recipeId) {
+    const selectedRecipe = appData.recettes.find(r => r.id == recipeId);
+    if (selectedRecipe) {
+        currentPlanning[dayIndex][slotType] = selectedRecipe;
+        generateShoppingList(); // Recalcule les courses en direct
+    }
+}
+
+// 2. Enregistrer le planning actuel dans Supabase
+async function saveCurrentMenuToSupabase() {
+    if (currentPlanning.length === 0) {
+        alert("Rien à enregistrer. Générez d'abord un planning.");
+        return;
+    }
+
+    let upsertData = currentPlanning.map(slot => ({
+        date: slot.date,
+        repas_midi_id: slot.lunch.id,
+        repas_soir_id: slot.dinner.id
+    }));
+
     const { error } = await sb.from('planning').upsert(upsertData, { onConflict: 'date' });
     if (error) {
         alert("Erreur enregistrement Supabase : " + error.message);
         return;
     }
 
-    await loadPlanningForWeek();
-    alert("Planning généré et synchronisé pour toute la famille !");
+    alert("Planning enregistré avec succès pour toute la famille !");
 }
 
 // Ajouter une nouvelle recette
@@ -188,6 +240,7 @@ async function addRecipe() {
     document.getElementById('new-recipe-name').value = '';
     document.getElementById('new-recipe-ingredients').value = '';
     await loadData();
+    alert("Recette ajoutée avec succès !");
 }
 
 // Changer d'onglet

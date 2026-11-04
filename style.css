@@ -132,8 +132,8 @@ main {
 
 /* Planning styles */
 .day-item {
-    margin-bottom: 12px;
-    padding-bottom: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
     border-bottom: 1px solid #f1f5f9;
 }
 
@@ -154,9 +154,18 @@ main {
 
 .meal-slot {
     font-size: 0.95rem;
-    margin: 4px 0;
+    margin: 6px 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.meal-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
 }
 
 .meal-tag {
@@ -165,8 +174,19 @@ main {
     color: #0369a1;
     padding: 2px 6px;
     border-radius: 4px;
-    margin-right: 8px;
     font-weight: 600;
+    min-width: 45px;
+    text-align: center;
+}
+
+.recipe-select {
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: #f8fafc;
+    color: var(--text);
+    max-width: 220px;
 }
 
 /* Shopping List styles */

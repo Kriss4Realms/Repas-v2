@@ -29,7 +29,12 @@
                     </label>
                     <input type="date" id="start-date" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem;" onchange="loadPlanningForWeek()">
                 </div>
-                <button class="btn" onclick="generateAndSaveMenu()">🎲 Générer & Enregistrer le planning</button>
+                
+                <!-- Boutons séparés : Génération en boucle & Enregistrement -->
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn" style="background: #0284c7;" onclick="generateRandomMenuLocally()">🎲 Générer</button>
+                    <button class="btn" style="background: #10b981;" onclick="saveCurrentMenuToSupabase()">💾 Enregistrer</button>
+                </div>
             </div>
 
             <div id="planning-container" class="card">
